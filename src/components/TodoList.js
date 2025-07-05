@@ -1,5 +1,6 @@
 import TodoItem from "./TodoItem";
 
+
 const TodoList=()=>{
 
     const handleToggleComplete = (id) => {
@@ -15,8 +16,10 @@ const TodoList=()=>{
   };
 
     return(
+      <>
         <h1>TodoList</h1>
-            <ul>
+
+        <ul className="scroolList">
         {todos.map((todo) => (
           <TodoItem
               key={todo.id}
@@ -25,7 +28,9 @@ const TodoList=()=>{
               onDelete={handleDeleteTodo}
             />
         ))}
+        
       </ul>
+      </>
     )
 }
 export default TodoList;

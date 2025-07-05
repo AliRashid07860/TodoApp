@@ -1,25 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TodoItem from "./TodoItem";
 
 const AddTodoForm = () => {
-  const [todos, setTodos] = useState([]);  
-  const [inputValue, setInputValue] = useState('');
+  const [todos, setTodos] = useState(() => {
+    const saved = localStorage.getItem("todos");
+    return saved ? JSON.parse(saved) : [];
+  });
 
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
+  const [inputValue, setInputValue] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
   };
 
   const handleAddTodo = () => {
-    if (inputValue.trim() === '') {
-      return;
-    }
+    if (inputValue.trim() === "") return;
     const newTodo = {
       id: Date.now(),
       text: inputValue,
       completed: false,
     };
     setTodos([...todos, newTodo]);
-    setInputValue('');
+    setInputValue("");
   };
 
   const handleToggleComplete = (id) => {
@@ -32,6 +38,13 @@ const AddTodoForm = () => {
 
   const handleDeleteTodo = (id) => {
     setTodos(todos.filter((todo) => todo.id !== id));
+  };
+  const handleUpdateTodo = (id, newText) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, text: newText } : todo
+      )
+    );
   };
 
   return (
@@ -46,14 +59,23 @@ const AddTodoForm = () => {
         />
         <button onClick={handleAddTodo}>Add To-Do</button>
       </div>
-      <ul>
+      <ul >
+
         {todos.map((todo) => (
           <TodoItem
-              key={todo.id}
-              todo={todo}
-              onToggleComplete={handleToggleComplete}
-              onDelete={handleDeleteTodo}
-            />
+            key={todo.id}
+            todo={todo}
+            onToggleComplete={handleToggleComplete}
+            onDelete={handleDeleteTodo}
+            onUpdate={handleUpdateTodo}
+          />
+
+          // <TodoItem
+          //   key={todo.id}
+          //   todo={todo}
+          //   onToggleComplete={handleToggleComplete}
+          //   onDelete={handleDeleteTodo}
+          // />
         ))}
       </ul>
     </div>
